@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<title>JS</title>
+		<meta charset="utf-8">
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<canvas id="canvasExp"></canvas>
+		<button>BOUNCE NOW</canvas>
+		<button>SPEED UP</canvas>
+		<button>SPEED DOWN</canvas>
+		<button>INCREMENT GRAVITY</canvas>
+
+		<script>
+			function Ball(){
+				this.version = '1.0'
+				this.name = 'Bouncing ball'
+				this.canvasDom = undefined
+				this.ctx = undefined
+				this.canvas = {
+					w: undefined,
+					h: undefined
+				}
+				this.posX = 50
+				this.posY = 50
+				this.velX = 5
+				this.velY = 1
+				this.color = 'red'
+				this.radius = 20
+				this.gravity = .05
+			}
+
+			Ball.prototype.init = function(id){
+				this.canvasDom = document.getElementById(id)
+				this.ctx = this.canvasDom.getContext('2d')
+				this._setDimensions()				
+				this._draw()
+				this._setListeners();
+				setInterval( function(){ this._update() }.bind(this), 20)
+			}
+
+			Ball.prototype._setDimensions = function(){
+				this.canvas.w = window.innerWidth
+				this.canvas.h = window.innerHeight
+
+				this.canvasDom.setAttribute('width', this.canvas.w)
+				this.canvasDom.setAttribute('height', this.canvas.h)
+			}
+
+			Ball.prototype._setListeners = function(){
+
+				var buttons = document.getElementsByTagName('button')
+				buttons[0].onclick = function(){ this.velY *= -1; this.velX *= -1 }.bind(this)
+				buttons[1].onclick = function(){ this.velX *= 1.1 }.bind(this)
+				buttons[2].onclick = function(){ this.velX *= .9 }.bind(this)
+				buttons[3].onclick = function(){ this.gravity *= 1.05 }.bind(this)
+			}
+
+			Ball.prototype._draw = function(){
+				this.ctx.beginPath()
+				this.ctx.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2)
+				this.ctx.fillStyle = this.color
+				this.ctx.fill()
+			}
+
+			Ball.prototype._update = function(){
+				this.ctx.clearRect(0,0, this.canvas.w, this.canvas.h)
+				this._draw()
+				this.posX += this.velX
+				this.posY += this.velY
+				this.velY += this.gravity
+
+				if (this.posY + this.velY > this.canvas.h || this.posY + this.velY < 0) {
+					this.velY *= -1;
+				}
+				if (this.posX + this.velX > this.canvas.w || this.posX + this.velX < 0) {
+					this.velX *= -1;
+				}
+			}
+
+
+			var app = new Ball()
+			app.init('canvasExp')
+
+
+		</script>
+	</body>
+</html>
